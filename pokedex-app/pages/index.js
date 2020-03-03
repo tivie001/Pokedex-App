@@ -4,8 +4,10 @@ import Paper from "@material-ui/core/Paper";
 import fetch from "isomorphic-unfetch";
 import Link from 'next/link'
 import Button from "@material-ui/core/Button";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import ReactDOM from "react-dom";
 import Layout from "./Layout";
+import Search from "./Search";
 
 const titleStyle = {
     fontFamily: "Pokemon Solid",
@@ -28,40 +30,9 @@ const secondBtn = {
     textShadow: "1px 1px black",
     backgroundColor: "#3B4CCA"
 };
-const cardTitle = {
-    margin: "0",
-    fontWeight: "800",
-};
-const linkStyle = {
-    textDecoration: "none",
-};
-const pokemonCard = {
-    width: "100px",
-    padding: "20px",
-    textAlign: "center",
-    marginRight: "1rem",
-    marginTop: "1rem",
-    boxShadow: "6px darkgrey",
-    borderRadius: "20px",
-    fontFamily: "Avenir",
-    color: "black",
-    backgroundColor: "#ebebeb"
-};
-const textField = {
-    width: "500px",
-    marginBottom: "1rem"
-};
 
-const PokemonCards = props => {
-    return (
-        <Grid item xs={6} sm={2}>
-            <Paper style={pokemonCard}>
-                <h3 style={cardTitle}>{props.name.charAt(0).toUpperCase() +
-                props.name.slice(1)}</h3>
-            </Paper>
-        </Grid>
-    )
-};
+
+
 
 const Index = ({ pokemon }) => (
     <Layout>
@@ -69,6 +40,7 @@ const Index = ({ pokemon }) => (
             <Grid container direction="column" justify="center" alignItems="center">
                 <h1 style={titleStyle}>Pokemon PokéDex</h1>
             </Grid>
+
             <Grid container direction="column" justify="center" alignItems="center">
                 <Grid item xs={6} sm={4}>
                     <Link href="/random">
@@ -78,16 +50,8 @@ const Index = ({ pokemon }) => (
                     </Link>
                 </Grid>
             </Grid>
-            <Grid container direction="row" justify="center" alignItems="center">
-                {pokemon.map((details, i) => {
-                    return (
-                        <Link href={`pokemon/${i + 1}`} as={`pokemon/${i + 1}`}>
-                            <a style={linkStyle}>
-                                <PokemonCards name={details.name} key={i + 1}/>
-                            </a>
-                        </Link>
-                    )
-                })}
+            <Grid container direction="column" justify="center" alignItems="center">
+                <Search pokemon={pokemon}/>
             </Grid>
         </Container>
     </Layout>
@@ -97,6 +61,10 @@ Index.getInitialProps = async function() {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=807`);
     const data = await res.json();
     const pokemon = data.results;
+
+    {pokemon.map((details, i) => {
+        details.key = i;
+    })}
 
     return { pokemon }
 };
